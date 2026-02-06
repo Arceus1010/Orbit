@@ -111,15 +111,8 @@ API server runs on `http://localhost:8000`
 
 ## Database Configuration
 
-**Connection:** PostgreSQL at `localhost:5432`
-**Database:** `orbit_db`
-**User:** `orbit_user`
-**Password:** `zekken1101`
-
-Full connection string in `Orbit-Backend/app/.env`:
-```
-DATABASE_URL=postgresql://orbit_user:zekken1101@localhost:5432/orbit_db
-```
+Database credentials are stored in `Orbit-Backend/app/.env` (not committed to git).
+See `.env` for `DATABASE_URL` and other sensitive configuration.
 
 ### Planned Schema (not yet migrated)
 
