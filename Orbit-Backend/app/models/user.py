@@ -63,20 +63,20 @@ class User(Base):
     )
 
     # User profile
-    full_name: Mapped[str] = mapped_column(
+    full_name: Mapped[str | None] = mapped_column(
         String(255),
-        nullable=False,
+        nullable=True,
     )
 
-    # Timestamps
+    # Timestamps (using utcnow() for timezone-naive datetimes matching DB column type)
     created_at: Mapped[datetime] = mapped_column(
-        default=lambda: datetime.now(timezone.utc),
+        default=datetime.utcnow,
         nullable=False,
     )
 
     updated_at: Mapped[datetime] = mapped_column(
-        default=lambda: datetime.now(timezone.utc),
-        onupdate=lambda: datetime.now(timezone.utc),  # Automatically updates on any change
+        default=datetime.utcnow,
+        onupdate=datetime.utcnow,  # Automatically updates on any change
         nullable=False,
     )
 

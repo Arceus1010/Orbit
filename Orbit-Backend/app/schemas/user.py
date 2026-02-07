@@ -45,11 +45,11 @@ class UserCreate(BaseModel):
         description="Password (min 8 characters)",
         examples=["SecurePass123!"]
     )
-    full_name: str = Field(
-        ...,
+    full_name: Optional[str] = Field(
+        None,
         min_length=1,
         max_length=255,
-        description="User's full name",
+        description="User's full name (optional)",
         examples=["John Doe"]
     )
 
