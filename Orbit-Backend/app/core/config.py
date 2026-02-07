@@ -18,7 +18,7 @@ class Settings(BaseSettings):
     """
     Application settings loaded from environment variables.
 
-    All settings are loaded from the .env file in the app directory.
+    All settings are loaded from the .env file in the project root (Orbit-Backend/).
     Pydantic automatically converts types and validates values.
 
     Attributes:
@@ -50,7 +50,7 @@ class Settings(BaseSettings):
 
     # Pydantic configuration using modern SettingsConfigDict
     model_config = SettingsConfigDict(
-        env_file=str(BASE_DIR / "app" / ".env"),
+        env_file=str(BASE_DIR / ".env"),
         env_file_encoding="utf-8",
         case_sensitive=True,
         extra="ignore",  # Ignore extra fields in .env file

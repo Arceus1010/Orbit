@@ -5,7 +5,7 @@ This module defines the User database model using SQLAlchemy 2.0 syntax.
 Users are the primary entity in the system - they own projects and tasks.
 """
 import uuid
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import TYPE_CHECKING
 
 from sqlalchemy import String
@@ -70,13 +70,13 @@ class User(Base):
 
     # Timestamps
     created_at: Mapped[datetime] = mapped_column(
-        default=datetime.utcnow,
+        default=lambda: datetime.now(timezone.utc),
         nullable=False,
     )
 
     updated_at: Mapped[datetime] = mapped_column(
-        default=datetime.utcnow,
-        onupdate=datetime.utcnow,  # Automatically updates on any change
+        default=lambda: datetime.now(timezone.utc),
+        onupdate=lambda: datetime.now(timezone.utc),  # Automatically updates on any change
         nullable=False,
     )
 
