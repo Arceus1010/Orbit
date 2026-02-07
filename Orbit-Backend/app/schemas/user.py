@@ -153,6 +153,6 @@ class TokenData(BaseModel):
     Used internally to decode and validate JWT tokens.
 
     Attributes:
-        email: User's email address extracted from token
+        user_id: User's UUID extracted from token (from "sub" claim)
     """
-    email: Optional[str] = None
+    user_id: Optional[uuid.UUID] = None
