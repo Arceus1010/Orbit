@@ -104,15 +104,8 @@ export function useLogout() {
   const queryClient = useQueryClient();
 
   return () => {
-    // Call the logout service (removes token from localStorage)
     logoutService();
-
-    // Clear all cached queries
-    // This prevents old user data from showing after logout
     queryClient.clear();
-
-    // You could also redirect here:
-    // navigate('/login');
   };
 }
 
@@ -146,22 +139,3 @@ export function useCurrentUser() {
   });
 }
 
-/**
- * Hook: useIsAuthenticated
- *
- * Simple hook to check if a user is logged in.
- * This is a client-side check (just checks for token in localStorage).
- *
- * Usage:
- * ```tsx
- * const isLoggedIn = useIsAuthenticated();
- *
- * return isLoggedIn ? <Dashboard /> : <Login />;
- * ```
- *
- * Note: This doesn't verify the token is valid.
- * Use `useCurrentUser` if you need to verify with the server.
- */
-export function useIsAuthenticated(): boolean {
-  return isAuthenticated();
-}

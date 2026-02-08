@@ -8,17 +8,15 @@
  */
 
 import { apiClient } from '../lib/axios';
+import { getToken, setToken, removeToken } from '../lib/token';
 import type {
   User,
   RegisterRequest,
   TokenResponse,
 } from '../types/auth';
 
-/**
- * LocalStorage key for storing the JWT token
- * Prefixed to avoid collisions with other apps
- */
-const TOKEN_KEY = 'access_token';
+// Re-export token helpers so existing imports from this file still work
+export { getToken, setToken, removeToken };
 
 /**
  * Register a new user
@@ -43,7 +41,6 @@ export async function register(data: RegisterRequest): Promise<User> {
  * @returns Token response with access_token
  */
 export async function login(email: string, password: string): Promise<TokenResponse> {
-  // Create form data (OAuth2 expects this format)
   const formData = new URLSearchParams();
   formData.append('username', email); // OAuth2 calls it 'username', but we use email
   formData.append('password', password);
@@ -54,7 +51,6 @@ export async function login(email: string, password: string): Promise<TokenRespo
     },
   });
 
-  // Store the token in localStorage for future requests
   setToken(response.data.access_token);
 
   return response.data;
@@ -77,15 +73,11 @@ export async function getCurrentUser(): Promise<User> {
 /**
  * Log out the current user
  *
- * This is a client-side operation - we just remove the token.
- * JWTs are stateless, so there's no server-side logout endpoint.
+ * Client-side only — removes the token from localStorage.
+ * The useLogout hook handles clearing the query cache and redirecting.
  */
 export function logout(): void {
   removeToken();
-  // In a real app, you might also want to:
-  // - Clear TanStack Query cache
-  // - Redirect to login page
-  // - Clear any other user-specific data
 }
 
 /**
@@ -95,30 +87,4 @@ export function logout(): void {
  */
 export function isAuthenticated(): boolean {
   return getToken() !== null;
-}
-
-// ==================== Token Management ====================
-// These functions handle localStorage operations for the JWT token
-
-/**
- * Store the JWT token in localStorage
- */
-export function setToken(token: string): void {
-  localStorage.setItem(TOKEN_KEY, token);
-}
-
-/**
- * Get the JWT token from localStorage
- *
- * @returns The token string, or null if not found
- */
-export function getToken(): string | null {
-  return localStorage.getItem(TOKEN_KEY);
-}
-
-/**
- * Remove the JWT token from localStorage
- */
-export function removeToken(): void {
-  localStorage.removeItem(TOKEN_KEY);
 }
