@@ -1,5 +1,8 @@
 import { useCurrentUser, useLogout } from '../hooks/useAuth';
 import { useNavigate } from 'react-router-dom';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent } from '@/components/ui/card';
+import { ModeToggle } from '@/components/mode-toggle';
 
 export default function Dashboard() {
   const { data: user } = useCurrentUser();
@@ -12,31 +15,31 @@ export default function Dashboard() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <nav className="border-b border-gray-200 bg-white">
+    <div className="min-h-screen bg-background">
+      <nav className="border-b border-border bg-card">
         <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-4 sm:px-6 lg:px-8">
-          <h1 className="text-xl font-bold text-gray-900">Orbit</h1>
+          <h1 className="text-xl font-bold text-foreground">Orbit</h1>
           <div className="flex items-center gap-4">
-            <span className="text-sm text-gray-600">{user?.email}</span>
-            <button
-              onClick={handleLogout}
-              className="rounded-md bg-gray-100 px-3 py-1.5 text-sm font-medium text-gray-700 hover:bg-gray-200"
-            >
+            <span className="text-sm text-muted-foreground">{user?.email}</span>
+            <ModeToggle />
+            <Button variant="secondary" size="sm" onClick={handleLogout}>
               Sign out
-            </button>
+            </Button>
           </div>
         </div>
       </nav>
 
       <main className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
-        <div className="rounded-lg border border-gray-200 bg-white p-8 text-center shadow-sm">
-          <h2 className="text-2xl font-semibold text-gray-900">
-            Welcome{user?.full_name ? `, ${user.full_name}` : ''}!
-          </h2>
-          <p className="mt-2 text-gray-600">
-            Your dashboard is ready. Projects and tasks are coming soon.
-          </p>
-        </div>
+        <Card>
+          <CardContent className="p-8 text-center">
+            <h2 className="text-2xl font-semibold text-foreground">
+              Welcome{user?.full_name ? `, ${user.full_name}` : ''}!
+            </h2>
+            <p className="mt-2 text-muted-foreground">
+              Your dashboard is ready. Projects and tasks are coming soon.
+            </p>
+          </CardContent>
+        </Card>
       </main>
     </div>
   );
