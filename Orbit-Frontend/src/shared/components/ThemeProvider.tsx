@@ -1,4 +1,5 @@
-import { createContext, useEffect, useState } from "react"
+import { useEffect, useState } from "react"
+import { ThemeProviderContext } from "./theme-context"
 
 type Theme = "dark" | "light" | "system"
 
@@ -7,18 +8,6 @@ interface ThemeProviderProps {
   defaultTheme?: Theme
   storageKey?: string
 }
-
-export interface ThemeProviderState {
-  theme: Theme
-  setTheme: (theme: Theme) => void
-}
-
-const initialState: ThemeProviderState = {
-  theme: "system",
-  setTheme: () => null,
-}
-
-export const ThemeProviderContext = createContext<ThemeProviderState>(initialState)
 
 export function ThemeProvider({
   children,

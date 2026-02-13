@@ -1,14 +1,15 @@
-import { useState, type FormEvent } from 'react';
+import { useState } from 'react';
 import { Link, Navigate, useNavigate } from 'react-router-dom';
-import { useCurrentUser, useLogin } from '../hooks/useAuth';
-import type { AxiosError } from 'axios';
-import type { ApiError } from '../types/auth';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Card, CardContent } from '@/components/ui/card';
+import { useCurrentUser, useLogin } from './auth.hooks';
+import { getErrorMessage } from './auth.utils';
+import { Button } from '@/shared/ui/button';
+import { Input } from '@/shared/ui/input';
+import { Label } from '@/shared/ui/label';
+import { Card, CardContent } from '@/shared/ui/card';
+import { PasswordInput } from './components/PasswordInput';
+import { Loader2, AlertCircle } from 'lucide-react';
 
-export default function Login() {
+export default function LoginPage() {
   const navigate = useNavigate();
   const { data: currentUser, isLoading: isCheckingAuth } = useCurrentUser();
   const { mutate: loginUser, isPending } = useLogin();
@@ -19,7 +20,7 @@ export default function Login() {
   if (isCheckingAuth) return null;
   if (currentUser) return <Navigate to="/dashboard" replace />;
 
-  function handleSubmit(e: FormEvent) {
+  function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setError('');
 
@@ -28,9 +29,7 @@ export default function Login() {
       {
         onSuccess: () => navigate('/dashboard'),
         onError: (err) => {
-          const axiosErr = err as AxiosError<ApiError>;
-          const detail = axiosErr.response?.data?.detail;
-          setError(typeof detail === 'string' ? detail : 'Login failed. Please try again.');
+          setError(getErrorMessage(err));
         },
       },
     );
@@ -48,7 +47,10 @@ export default function Login() {
           <CardContent className="pt-6">
             <form onSubmit={handleSubmit} className="space-y-6">
               {error && (
-                <div className="rounded-md bg-destructive/10 p-3 text-sm text-destructive">{error}</div>
+                <div className="flex items-start gap-2 rounded-md bg-destructive/10 p-3 text-sm text-destructive">
+                  <AlertCircle className="h-4 w-4 mt-0.5 shrink-0" />
+                  <span>{error}</span>
+                </div>
               )}
 
               <div className="space-y-2">
@@ -65,9 +67,8 @@ export default function Login() {
 
               <div className="space-y-2">
                 <Label htmlFor="password">Password</Label>
-                <Input
+                <PasswordInput
                   id="password"
-                  type="password"
                   required
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
@@ -76,6 +77,7 @@ export default function Login() {
               </div>
 
               <Button type="submit" disabled={isPending} className="w-full">
+                {isPending && <Loader2 className="animate-spin" />}
                 {isPending ? 'Signing in...' : 'Sign in'}
               </Button>
 

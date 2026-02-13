@@ -1,11 +1,3 @@
-/**
- * JWT Token Management
- *
- * Centralized token storage helpers used by both the Axios interceptor
- * and the auth service. Kept in a separate file to avoid circular imports
- * (authService imports apiClient, so axios.ts cannot import authService).
- */
-
 const TOKEN_KEY = 'access_token';
 
 export function getToken(): string | null {

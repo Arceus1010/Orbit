@@ -1,14 +1,16 @@
-import { useState, type FormEvent } from 'react';
+import { useState } from 'react';
 import { Link, Navigate, useNavigate } from 'react-router-dom';
-import { useCurrentUser, useRegister, useLogin } from '../hooks/useAuth';
-import type { AxiosError } from 'axios';
-import type { ApiError } from '../types/auth';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Card, CardContent } from '@/components/ui/card';
+import { useCurrentUser, useRegister, useLogin } from './auth.hooks';
+import { getErrorMessage, isPasswordValid } from './auth.utils';
+import { PasswordRequirements } from './components/PasswordRequirements';
+import { Button } from '@/shared/ui/button';
+import { Input } from '@/shared/ui/input';
+import { Label } from '@/shared/ui/label';
+import { Card, CardContent } from '@/shared/ui/card';
+import { PasswordInput } from './components/PasswordInput';
+import { Loader2, AlertCircle } from 'lucide-react';
 
-export default function Register() {
+export default function RegisterPage() {
   const navigate = useNavigate();
   const { data: currentUser, isLoading: isCheckingAuth } = useCurrentUser();
   const { mutate: registerUser, isPending: isRegistering } = useRegister();
@@ -17,13 +19,14 @@ export default function Register() {
   const [password, setPassword] = useState('');
   const [fullName, setFullName] = useState('');
   const [error, setError] = useState('');
+  const [passwordFocused, setPasswordFocused] = useState(false);
 
   if (isCheckingAuth) return null;
   if (currentUser) return <Navigate to="/dashboard" replace />;
 
   const isPending = isRegistering || isLoggingIn;
 
-  function handleSubmit(e: FormEvent) {
+  function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setError('');
 
@@ -31,7 +34,6 @@ export default function Register() {
       { email, password, full_name: fullName || null },
       {
         onSuccess: () => {
-          // Auto-login after successful registration
           loginUser(
             { email, password },
             {
@@ -41,15 +43,7 @@ export default function Register() {
           );
         },
         onError: (err) => {
-          const axiosErr = err as AxiosError<ApiError>;
-          const detail = axiosErr.response?.data?.detail;
-          if (typeof detail === 'string') {
-            setError(detail);
-          } else if (Array.isArray(detail)) {
-            setError(detail.map((d) => d.msg).join('. '));
-          } else {
-            setError('Registration failed. Please try again.');
-          }
+          setError(getErrorMessage(err));
         },
       },
     );
@@ -67,7 +61,10 @@ export default function Register() {
           <CardContent className="pt-6">
             <form onSubmit={handleSubmit} className="space-y-6">
               {error && (
-                <div className="rounded-md bg-destructive/10 p-3 text-sm text-destructive">{error}</div>
+                <div className="flex items-start gap-2 rounded-md bg-destructive/10 p-3 text-sm text-destructive">
+                  <AlertCircle className="h-4 w-4 mt-0.5 shrink-0" />
+                  <span>{error}</span>
+                </div>
               )}
 
               <div className="space-y-2">
@@ -95,18 +92,27 @@ export default function Register() {
 
               <div className="space-y-2">
                 <Label htmlFor="password">Password</Label>
-                <Input
+                <PasswordInput
                   id="password"
-                  type="password"
                   required
-                  minLength={8}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  placeholder="At least 8 characters"
+                  onFocus={() => setPasswordFocused(true)}
+                  onBlur={() => setPasswordFocused(false)}
+                  placeholder="Create a strong password"
+                />
+                <PasswordRequirements
+                  password={password}
+                  showRequirements={passwordFocused || password.length > 0}
                 />
               </div>
 
-              <Button type="submit" disabled={isPending} className="w-full">
+              <Button
+                type="submit"
+                disabled={isPending || (password.length > 0 && !isPasswordValid(password))}
+                className="w-full"
+              >
+                {isPending && <Loader2 className="animate-spin" />}
                 {isRegistering ? 'Creating account...' : isLoggingIn ? 'Signing in...' : 'Create account'}
               </Button>
 

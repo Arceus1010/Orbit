@@ -1,5 +1,5 @@
 import { Navigate } from 'react-router-dom';
-import { useCurrentUser } from '../hooks/useAuth';
+import { useCurrentUser } from '@/features/auth/auth.hooks';
 import LoadingScreen from './LoadingScreen';
 
 export default function ProtectedRoute({ children }: { children: React.ReactNode }) {

@@ -1,10 +1,10 @@
-import { useCurrentUser, useLogout } from '../hooks/useAuth';
+import { useCurrentUser, useLogout } from '@/features/auth/auth.hooks';
 import { useNavigate } from 'react-router-dom';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
-import { ModeToggle } from '@/components/mode-toggle';
+import { Button } from '@/shared/ui/button';
+import { Card, CardContent } from '@/shared/ui/card';
+import { ModeToggle } from '@/shared/components/ModeToggle';
 
-export default function Dashboard() {
+export default function DashboardPage() {
   const { data: user } = useCurrentUser();
   const logout = useLogout();
   const navigate = useNavigate();
