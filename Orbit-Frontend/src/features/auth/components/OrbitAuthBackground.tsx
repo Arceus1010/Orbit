@@ -1,13 +1,30 @@
 import { useEffect, useRef, useCallback } from "react";
+import { useTheme } from "@/shared/hooks/useTheme";
 
-const COLORS = {
+const DARK_COLORS = {
   bg: "#0a0a0a",
   ring: "rgba(255, 255, 255, 0.05)",
   ringDash: "rgba(255, 255, 255, 0.03)",
   particle: "rgba(255, 255, 255, 0.8)",
-  glow: "rgba(255, 255, 255, 0.12)",
-  center: "rgba(255, 255, 255, 0.02)",
+  dust: (a: number) => `rgba(200, 200, 200, ${a})`,
+  shadowColor: "rgba(255,255,255,0.4)",
+  coreCenter: "#fff",
+  coreEdge: "rgba(255,255,255,0)",
+  coreShadow: "rgba(255,255,255,0.5)",
   vignette: "rgba(0, 0, 0, 0.6)",
+} as const;
+
+const LIGHT_COLORS = {
+  bg: "#f5f5f5",
+  ring: "rgba(0, 0, 0, 0.06)",
+  ringDash: "rgba(0, 0, 0, 0.04)",
+  particle: "rgba(0, 0, 0, 0.5)",
+  dust: (a: number) => `rgba(80, 80, 80, ${a * 0.6})`,
+  shadowColor: "rgba(0,0,0,0.15)",
+  coreCenter: "#333",
+  coreEdge: "rgba(50,50,50,0)",
+  coreShadow: "rgba(0,0,0,0.2)",
+  vignette: "rgba(245, 245, 245, 0.5)",
 } as const;
 
 interface Orbit {
@@ -44,6 +61,9 @@ function OrbitAuthBackground(): React.JSX.Element {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const mouseRef = useRef({ x: 0, y: 0 });
   const targetMouseRef = useRef({ x: 0, y: 0 });
+  const { theme } = useTheme();
+
+  const isDark = theme === "dark" || (theme === "system" && window.matchMedia("(prefers-color-scheme: dark)").matches);
 
   const createDust = useCallback((): DustParticle[] => {
     return Array.from({ length: DUST_COUNT }, () => ({
@@ -57,6 +77,7 @@ function OrbitAuthBackground(): React.JSX.Element {
   } , []);
 
   useEffect(() => {
+    const colors = isDark ? DARK_COLORS : LIGHT_COLORS;
     const canvas = canvasRef.current;
     if (!canvas) return;
     const ctx = canvas.getContext("2d", { alpha: false });
@@ -102,7 +123,7 @@ function OrbitAuthBackground(): React.JSX.Element {
       const cy = h / 2 + mouseRef.current.y;
 
       // Clear
-      ctx.fillStyle = COLORS.bg;
+      ctx.fillStyle = colors.bg;
       ctx.fillRect(0, 0, w, h);
 
       // 1. Dust Layer (Background)
@@ -115,7 +136,7 @@ function OrbitAuthBackground(): React.JSX.Element {
 
         ctx.beginPath();
         ctx.arc(d.x * w, d.y * h, d.r, 0, Math.PI * 2);
-        ctx.fillStyle = `rgba(200, 200, 200, ${d.a})`;
+        ctx.fillStyle = colors.dust(d.a);
         ctx.fill();
       }
 
@@ -127,7 +148,7 @@ function OrbitAuthBackground(): React.JSX.Element {
         // Draw Ring
         ctx.beginPath();
         ctx.ellipse(cx, cy, rx, ry, 0, 0, Math.PI * 2);
-        ctx.strokeStyle = orbit.dashed ? COLORS.ringDash : COLORS.ring;
+        ctx.strokeStyle = orbit.dashed ? colors.ringDash : colors.ring;
         ctx.setLineDash(orbit.dashed ? [2, 10] : []);
         ctx.lineWidth = 1;
         ctx.stroke();
@@ -141,13 +162,13 @@ function OrbitAuthBackground(): React.JSX.Element {
 
           // Bloom effect for particles
           ctx.shadowBlur = 10 * scale;
-          ctx.shadowColor = "rgba(255,255,255,0.4)";
-          
+          ctx.shadowColor = colors.shadowColor;
+
           ctx.beginPath();
           ctx.arc(px, py, 2 * scale, 0, Math.PI * 2);
-          ctx.fillStyle = COLORS.particle;
+          ctx.fillStyle = colors.particle;
           ctx.fill();
-          
+
           ctx.shadowBlur = 0; // Reset blur
         }
       });
@@ -155,11 +176,11 @@ function OrbitAuthBackground(): React.JSX.Element {
       // 3. Central Core
       const pulse = Math.sin(currentTime * 0.002) * 0.2 + 0.8;
       const coreGrad = ctx.createRadialGradient(cx, cy, 0, cx, cy, 6 * scale);
-      coreGrad.addColorStop(0, "#fff");
-      coreGrad.addColorStop(1, "rgba(255,255,255,0)");
-      
+      coreGrad.addColorStop(0, colors.coreCenter);
+      coreGrad.addColorStop(1, colors.coreEdge);
+
       ctx.shadowBlur = 20 * scale * pulse;
-      ctx.shadowColor = "rgba(255,255,255,0.5)";
+      ctx.shadowColor = colors.coreShadow;
       ctx.fillStyle = coreGrad;
       ctx.beginPath();
       ctx.arc(cx, cy, 6 * scale * pulse, 0, Math.PI * 2);
@@ -169,7 +190,7 @@ function OrbitAuthBackground(): React.JSX.Element {
       // 4. Final Vignette (Overlay)
       const vignette = ctx.createRadialGradient(cx, cy, w * 0.1, cx, cy, w * 0.8);
       vignette.addColorStop(0, "transparent");
-      vignette.addColorStop(1, COLORS.vignette);
+      vignette.addColorStop(1, colors.vignette);
       ctx.fillStyle = vignette;
       ctx.fillRect(0, 0, w, h);
 
@@ -183,13 +204,13 @@ function OrbitAuthBackground(): React.JSX.Element {
       window.removeEventListener("mousemove", handleMouseMove);
       cancelAnimationFrame(animationFrameId);
     };
-  }, [createDust]);
+  }, [createDust, isDark]);
 
   return (
     <canvas
       ref={canvasRef}
       className="fixed inset-0 pointer-events-none"
-      style={{ background: COLORS.bg }}
+      style={{ background: isDark ? DARK_COLORS.bg : LIGHT_COLORS.bg }}
       aria-hidden="true"
     />
   );

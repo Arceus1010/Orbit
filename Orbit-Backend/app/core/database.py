@@ -1,11 +1,14 @@
 """Database configuration and session management."""
 
+import logging
 from typing import AsyncGenerator
 
 from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine, async_sessionmaker
 from sqlalchemy.orm import DeclarativeBase
 
 from app.core.config import settings
+
+logger = logging.getLogger(__name__)
 
 try:
     import asyncpg  # noqa: F401
@@ -64,7 +67,7 @@ async def check_db_connection() -> bool:
             await conn.execute(text("SELECT 1"))
         return True
     except Exception as e:
-        print(f"Database connection check failed: {e}")
+        logger.error(f"Database connection check failed: {e}")
         return False
 
 

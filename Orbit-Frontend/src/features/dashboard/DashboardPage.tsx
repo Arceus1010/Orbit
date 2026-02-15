@@ -2,16 +2,17 @@ import { useCurrentUser, useLogout } from '@/features/auth/auth.hooks';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/shared/ui/button';
 import { Card, CardContent } from '@/shared/ui/card';
-import { ModeToggle } from '@/shared/components/ModeToggle';
+import { ThemeToggle } from '@/shared/components/ThemeToggle';
 
 export default function DashboardPage() {
   const { data: user } = useCurrentUser();
-  const logout = useLogout();
+  const { mutate: logout } = useLogout();
   const navigate = useNavigate();
 
   function handleLogout() {
-    logout();
-    navigate('/login');
+    logout(undefined, {
+      onSuccess: () => navigate('/login'),
+    });
   }
 
   return (
@@ -21,7 +22,7 @@ export default function DashboardPage() {
           <h1 className="text-xl font-bold text-foreground">Orbit</h1>
           <div className="flex items-center gap-4">
             <span className="text-sm text-muted-foreground">{user?.email}</span>
-            <ModeToggle />
+            <ThemeToggle />
             <Button variant="secondary" size="sm" onClick={handleLogout}>
               Sign out
             </Button>

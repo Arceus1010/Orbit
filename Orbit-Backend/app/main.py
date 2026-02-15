@@ -39,7 +39,7 @@ app = FastAPI(
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:5173"],
+    allow_origins=settings.CORS_ORIGINS,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -48,17 +48,17 @@ app.add_middleware(
 
 @app.exception_handler(Exception)
 async def global_exception_handler(request: Request, exc: Exception):
-    if settings.DEBUG:
-        import traceback
-        logger.error(f"Unhandled exception: {exc}\n{traceback.format_exc()}")
+    import traceback
+    logger.error(f"Unhandled exception: {exc}\n{traceback.format_exc()}")
 
-    return JSONResponse(
-        status_code=500,
-        content={
-            "detail": "Internal server error",
-            "message": "An unexpected error occurred. Please try again later."
-        }
-    )
+    content: dict[str, str] = {
+        "detail": "Internal server error",
+        "message": "An unexpected error occurred. Please try again later.",
+    }
+    if settings.DEBUG:
+        content["traceback"] = traceback.format_exc()
+
+    return JSONResponse(status_code=500, content=content)
 
 
 @app.exception_handler(RequestValidationError)

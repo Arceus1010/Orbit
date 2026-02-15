@@ -3,7 +3,7 @@ import type { ApiError, ApiErrorDetail } from './auth.types';
 
 const ERROR_MESSAGES: Record<string, string> = {
   'Incorrect email or password': 'The email or password you entered is incorrect.',
-  'User already exists': 'An account with this email already exists.',
+  'Email already registered': 'An account with this email already exists.',
   'Could not validate credentials': 'Your session has expired. Please log in again.',
   'Not authenticated': 'You need to be logged in to access this page.',
   'value_error.email': 'Please enter a valid email address.',
@@ -38,6 +38,9 @@ export function getErrorMessage(error: unknown): string {
   const status = axiosError.response.status;
   if (status === 401) {
     return 'The email or password you entered is incorrect.';
+  }
+  if (status === 409) {
+    return 'An account with this email already exists.';
   }
   if (status === 403) {
     return 'You don\'t have permission to perform this action.';

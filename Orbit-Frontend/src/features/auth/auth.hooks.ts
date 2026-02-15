@@ -30,10 +30,14 @@ export function useLogin() {
 export function useLogout() {
   const queryClient = useQueryClient();
 
-  return () => {
-    logoutService();
-    queryClient.clear();
-  };
+  return useMutation({
+    mutationFn: async () => {
+      logoutService();
+    },
+    onSuccess: () => {
+      queryClient.clear();
+    },
+  });
 }
 
 export function useCurrentUser() {
