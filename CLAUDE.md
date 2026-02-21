@@ -43,7 +43,9 @@ Swagger UI: `http://localhost:8000/docs` | Health: `GET /health`, `GET /health/d
 
 ### Environment Setup
 
-Backend env file lives at `Orbit-Backend/app/.env`. Copy from `Orbit-Backend/.env.example` and fill in actual values (DATABASE_URL, SECRET_KEY, ANTHROPIC_API_KEY).
+Backend env file lives at `Orbit-Backend/.env` (NOT `app/.env` — `config.py` resolves `BASE_DIR` as three parents up from `app/core/config.py`). Copy from `Orbit-Backend/.env.example` and fill in actual values (`DATABASE_URL`, `SECRET_KEY`, `ANTHROPIC_API_KEY`).
+
+Frontend supports an optional `VITE_API_URL` env var (defaults to `http://localhost:8000`). Set it in `Orbit-Frontend/.env.local` if the backend runs on a different address.
 
 ### Alembic Migrations (from `Orbit-Backend/`)
 
@@ -53,7 +55,7 @@ alembic upgrade head                                # Apply all
 alembic downgrade -1                                # Rollback last
 ```
 
-After creating/modifying a model, import it in `alembic/env.py` before running autogenerate. Never use `Base.metadata.create_all()` — always use Alembic.
+After creating/modifying a model, import it in `alembic/env.py` under the `# Import all models here` section (see the commented-out Project/Task/Subtask TODO lines there) before running autogenerate. Never use `Base.metadata.create_all()` — always use Alembic.
 
 ### Tests
 
@@ -83,7 +85,9 @@ No test framework is configured yet for either frontend or backend.
 - **TanStack Query** for server state with configured `QueryClient` (1-min stale time, 5-min cache). Query keys defined in `src/shared/lib/query-client.ts`.
 - **Axios instance** (`src/shared/lib/axios.ts`) with request/response interceptors for automatic JWT token management (localStorage). Token helpers in `src/shared/lib/token.ts`.
 - **Feature pattern:** Each feature (e.g., `features/auth/`) contains: `*.types.ts`, `*.service.ts`, `*.hooks.ts`, `*.utils.ts`, page components, and feature-specific sub-components in `components/`. New features should follow this pattern.
-- **Routing:** React Router DOM configured in `App.tsx` with `ProtectedRoute` wrapper component that checks auth state and redirects to `/login` if unauthenticated.
+- **Routing:** React Router DOM configured in `App.tsx`. Two route guards in `src/shared/components/`:
+  - `ProtectedRoute` — redirects unauthenticated users to `/login`
+  - `GuestOnlyRoute` — redirects authenticated users to `/dashboard` (used on `/login` and `/register`)
 
 ## Current Implementation State
 
