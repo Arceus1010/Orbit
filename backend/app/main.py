@@ -11,6 +11,7 @@ from sqlalchemy import text
 from app.core.database import get_db, check_db_connection, close_db
 from app.core.config import settings
 from app.api.auth import router as auth_router
+from app.api.projects import router as projects_router
 
 logger = logging.getLogger(__name__)
 
@@ -73,6 +74,7 @@ async def validation_exception_handler(request: Request, exc: RequestValidationE
 
 
 app.include_router(auth_router)
+app.include_router(projects_router)
 
 
 @app.get("/")

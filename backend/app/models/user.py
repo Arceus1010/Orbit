@@ -4,7 +4,7 @@ import uuid
 from datetime import datetime
 
 from sqlalchemy import String
-from sqlalchemy.orm import Mapped, mapped_column
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.core.database import Base
 
@@ -45,6 +45,10 @@ class User(Base):
         default=datetime.utcnow,
         onupdate=datetime.utcnow,
         nullable=False,
+    )
+
+    projects: Mapped[list["Project"]] = relationship(  # type: ignore[name-defined]
+        "Project", back_populates="user", cascade="all, delete-orphan"
     )
 
     def __repr__(self) -> str:

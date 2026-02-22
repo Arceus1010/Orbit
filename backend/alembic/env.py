@@ -35,7 +35,7 @@ if config.config_file_name is not None:
 # Import all models here for 'autogenerate' support
 # This ensures Alembic can detect changes to these models
 from app.models.user import User  # ✅ User model created
-# from app.models.project import Project  # TODO: Create Project model
+from app.models.project import Project  # ✅ Project model created
 # from app.models.task import Task  # TODO: Create Task model
 # from app.models.subtask import Subtask  # TODO: Create Subtask model
 
