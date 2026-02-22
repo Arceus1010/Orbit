@@ -22,7 +22,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Development Commands
 
-### Frontend (`Orbit-Frontend/`)
+### Frontend (`frontend/`)
 
 ```bash
 npm run dev       # Dev server at localhost:5173
@@ -31,9 +31,9 @@ npm run lint      # ESLint
 npm run preview   # Preview production build locally
 ```
 
-### Backend (`Orbit-Backend/`)
+### Backend (`backend/`)
 
-All backend commands run from `Orbit-Backend/` with venv activated (`venv\Scripts\activate` on Windows, `source venv/bin/activate` on Unix).
+All backend commands run from `backend/` with venv activated (`venv\Scripts\activate` on Windows, `source venv/bin/activate` on Unix).
 
 ```bash
 python -m uvicorn app.main:app --reload   # Dev server at localhost:8000
@@ -43,11 +43,11 @@ Swagger UI: `http://localhost:8000/docs` | Health: `GET /health`, `GET /health/d
 
 ### Environment Setup
 
-Backend env file lives at `Orbit-Backend/.env` (NOT `app/.env` — `config.py` resolves `BASE_DIR` as three parents up from `app/core/config.py`). Copy from `Orbit-Backend/.env.example` and fill in actual values (`DATABASE_URL`, `SECRET_KEY`, `ANTHROPIC_API_KEY`).
+Backend env file lives at `backend/.env` (NOT `app/.env` — `config.py` resolves `BASE_DIR` as three parents up from `app/core/config.py`). Copy from `backend/.env.example` and fill in actual values (`DATABASE_URL`, `SECRET_KEY`, `ANTHROPIC_API_KEY`).
 
-Frontend supports an optional `VITE_API_URL` env var (defaults to `http://localhost:8000`). Set it in `Orbit-Frontend/.env.local` if the backend runs on a different address.
+Frontend supports an optional `VITE_API_URL` env var (defaults to `http://localhost:8000`). Set it in `frontend/.env.local` if the backend runs on a different address.
 
-### Alembic Migrations (from `Orbit-Backend/`)
+### Alembic Migrations (from `backend/`)
 
 ```bash
 alembic revision --autogenerate -m "description"   # Generate migration

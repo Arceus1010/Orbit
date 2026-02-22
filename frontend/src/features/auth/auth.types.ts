@@ -1,5 +1,5 @@
 /**
- * Auth types matching backend Pydantic schemas (Orbit-Backend/app/schemas/user.py)
+ * Auth types matching backend Pydantic schemas (backend/app/schemas/user.py)
  */
 
 export interface User {
