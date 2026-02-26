@@ -2,6 +2,7 @@ import { Routes, Route, Navigate } from 'react-router-dom';
 import { useCurrentUser } from './features/auth/auth.hooks';
 import ProtectedRoute from './shared/components/ProtectedRoute';
 import GuestOnlyRoute from './shared/components/GuestOnlyRoute';
+import AppLayout from './shared/components/AppLayout';
 import LoadingScreen from './shared/components/LoadingScreen';
 import LoginPage from './features/auth/LoginPage';
 import RegisterPage from './features/auth/RegisterPage';
@@ -26,7 +27,9 @@ export default function App() {
         path="/dashboard"
         element={
           <ProtectedRoute>
-            <DashboardPage />
+            <AppLayout>
+              <DashboardPage />
+            </AppLayout>
           </ProtectedRoute>
         }
       />
